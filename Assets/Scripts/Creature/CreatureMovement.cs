@@ -10,28 +10,38 @@ public class CreatureMovement : MonoBehaviour {
 	float minSleepTime = 0.2f;
 	float maxSleepTime = 0.8f;
 	float sleepTime;
-	bool sleeping = true;
+	bool sleeping;
 	
 	Vector2 lookRight = new Vector2(1, 1);
 	Vector2 lookLeft = new Vector2(-1, 1);
 	
-	void Start() {
-	}
+	Color mouseOverColor = Color.blue;
+	Color originalColor = Color.yellow;
+	bool dragging = false;
+	Vector3 offSet;
 	
+	void Start() {
+		sleeping = true;
+	}
+
 	void Update() {
-		if (sleeping) {
-			sleepTime -= Time.deltaTime;
-			if (sleepTime <= 0) {
-			 	sleeping = false;
-				NewTargetPosition();
-			}
+		if (dragging) {
+			transform.position =  Camera.main.ScreenToWorldPoint(Input.mousePosition) + offSet;
 		} else {
-			Vector3 pos = Vector3.MoveTowards(transform.position, wayPoint, speed * Time.deltaTime);
-			pos.z = pos.y;
-			transform.position = pos;
-			if ((pos - wayPoint).magnitude < 0.01f) {
-				sleepTime = Random.Range(minSleepTime, maxSleepTime);
-				sleeping = true;
+			if (sleeping) {
+				sleepTime -= Time.deltaTime;
+				if (sleepTime <= 0) {
+				 	sleeping = false;
+					NewTargetPosition();
+				}
+			} else {
+				Vector3 pos = Vector3.MoveTowards(transform.position, wayPoint, speed * Time.deltaTime);
+				pos.z = pos.y;
+				transform.position = pos;
+				if ((pos - wayPoint).magnitude < 0.01f) {
+					sleepTime = Random.Range(minSleepTime, maxSleepTime);
+					sleeping = true;
+				}
 			}
 		}
 	}
@@ -54,5 +64,15 @@ public class CreatureMovement : MonoBehaviour {
 		if (col.tag == "Wall") {
 			wayPoint = -wayPoint;
 		}
+	}
+	
+	
+	void OnMouseDown() {
+		offSet = transform.position - Camera.main.ScreenToWorldPoint(Input.mousePosition);
+		dragging = true;
+	}
+	
+	void OnMouseUp() {
+		dragging = false;
 	}
 }
