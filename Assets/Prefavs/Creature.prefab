@@ -12,9 +12,10 @@ GameObject:
   - 114: {fileID: 11438924}
   - 58: {fileID: 5828468}
   - 50: {fileID: 5073970}
+  - 114: {fileID: 11499368}
   m_Layer: 0
   m_Name: Creature
-  m_TagString: Untagged
+  m_TagString: Creature
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -84,7 +85,7 @@ CircleCollider2D:
   m_GameObject: {fileID: 148116}
   m_Enabled: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
@@ -100,6 +101,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77ca3b9912d4b421eb60fbe529e2db51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  creaturePrefav: {fileID: 148116}
+--- !u!114 &11499368
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 148116}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c83bc3aaab8c4a81ac27fdc2a90d9d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bodyLevel: 0
+  headLevel: 0
+  headSprites:
+  - {fileID: 21300000, guid: 24a58a105ad334b878bd8695526e2dce, type: 3}
+  - {fileID: 21300000, guid: 1d3a1ae1a6b024d82bd3880c2919af35, type: 3}
+  bodySprites:
+  - {fileID: 21300000, guid: 484133cf2fe3e462a92055f96e16d819, type: 3}
+  - {fileID: 21300000, guid: 4752c4a3ce2454fd6a2ad8555378da1f, type: 3}
+  head: {fileID: 186248}
 --- !u!212 &21250756
 SpriteRenderer:
   m_ObjectHideFlags: 1

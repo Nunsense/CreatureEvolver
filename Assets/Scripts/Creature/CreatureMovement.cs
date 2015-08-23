@@ -3,6 +3,8 @@ using System.Collections;
 
 public class CreatureMovement : MonoBehaviour {
 
+	public GameObject creaturePrefav;
+	
 	float speed = 0.5f;
 	Vector3 wayPoint;
 	float range = 0.5f;
@@ -19,6 +21,8 @@ public class CreatureMovement : MonoBehaviour {
 	Color originalColor = Color.yellow;
 	bool dragging = false;
 	Vector3 offSet;
+	
+	Creature currentTouchingCreature;
 	
 	void Start() {
 		sleeping = true;
@@ -66,9 +70,16 @@ public class CreatureMovement : MonoBehaviour {
 	void OnTriggerEnter2D(Collider2D col) {
 		if (col.tag == "Wall") {
 			wayPoint = -wayPoint;
+		} else if (dragging && col.tag == "Creature") {
+			currentTouchingCreature = col.GetComponent<Creature> ();
 		}
 	}
 	
+	void OnTriggerExit2D(Collider2D col) {
+		if (dragging && col.tag == "Creature") {
+			currentTouchingCreature = null;
+		}
+	}
 	
 	void OnMouseDown() {
 		offSet = transform.position - Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -77,5 +88,15 @@ public class CreatureMovement : MonoBehaviour {
 	
 	void OnMouseUp() {
 		dragging = false;
+		if (currentTouchingCreature != null) {
+			MergeCreatures(currentTouchingCreature);
+		}
+	}
+	
+	void MergeCreatures(Creature other) {
+		GameObject creatureGO = GameObject.Instantiate(creaturePrefav) as GameObject;
+		creatureGO.transform.position = transform.position;
+		Creature creature = creatureGO.GetComponent<Creature> ();
+		creature.MergeCreatures(GetComponent<Creature> (), other);
 	}
 }
