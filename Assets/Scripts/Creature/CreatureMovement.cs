@@ -26,7 +26,9 @@ public class CreatureMovement : MonoBehaviour {
 
 	void Update() {
 		if (dragging) {
-			transform.position =  Camera.main.ScreenToWorldPoint(Input.mousePosition) + offSet;
+			Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition) + offSet;;
+			pos.z = -5;
+			transform.position = pos;
 		} else {
 			if (sleeping) {
 				sleepTime -= Time.deltaTime;
@@ -38,6 +40,7 @@ public class CreatureMovement : MonoBehaviour {
 				Vector3 pos = Vector3.MoveTowards(transform.position, wayPoint, speed * Time.deltaTime);
 				pos.z = pos.y;
 				transform.position = pos;
+				
 				if ((pos - wayPoint).magnitude < 0.01f) {
 					sleepTime = Random.Range(minSleepTime, maxSleepTime);
 					sleeping = true;
