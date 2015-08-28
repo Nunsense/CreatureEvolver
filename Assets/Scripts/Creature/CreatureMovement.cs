@@ -6,16 +6,16 @@ public class CreatureMovement : MonoBehaviour {
 	public GameObject creaturePrefav;
 	
 	float speed = 0.5f;
-	Vector3 wayPoint;
-	float range = 0.5f;
+	Vector3 targetPosition;
+	float range = 1f;
 	
-	float minSleepTime = 0.2f;
-	float maxSleepTime = 0.8f;
+	float minSleepTime = 0.5f;
+	float maxSleepTime = 1.4f;
 	float sleepTime;
-	bool sleeping;
+	bool resting;
 	
-	Vector2 lookRight = new Vector2(1, 1);
-	Vector2 lookLeft = new Vector2(-1, 1);
+	Vector2 lookRight = new Vector2(-1, 1);
+	Vector2 lookLeft = new Vector2(1, 1);
 	
 	Color mouseOverColor = Color.blue;
 	Color originalColor = Color.yellow;
@@ -24,8 +24,17 @@ public class CreatureMovement : MonoBehaviour {
 	
 	Creature currentTouchingCreature;
 	
+	Animator anim;
+	
+	Transform body;
+	
+	void Awake() {
+		body = transform.FindChild("Body");
+		anim = GetComponent<Animator> ();
+	}
+	
 	void Start() {
-		sleeping = true;
+		resting = true;
 	}
 
 	void Update() {
@@ -34,42 +43,40 @@ public class CreatureMovement : MonoBehaviour {
 			pos.z = -5;
 			transform.position = pos;
 		} else {
-			if (sleeping) {
+			if (resting) {
 				sleepTime -= Time.deltaTime;
 				if (sleepTime <= 0) {
-				 	sleeping = false;
+				 	resting = false;
 					NewTargetPosition();
+					anim.SetBool("walking", true);
 				}
 			} else {
-				Vector3 pos = Vector3.MoveTowards(transform.position, wayPoint, speed * Time.deltaTime);
+				Vector3 pos = Vector3.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
 				pos.z = pos.y;
 				transform.position = pos;
 				
-				if ((pos - wayPoint).magnitude < 0.01f) {
+				if (Vector2.Distance(pos, targetPosition) < speed) {
 					sleepTime = Random.Range(minSleepTime, maxSleepTime);
-					sleeping = true;
+					resting = true;
+					anim.SetBool("walking", false);
 				}
 			}
 		}
 	}
 	
 	void NewTargetPosition() {
-		wayPoint = new Vector3(
-			Random.Range(transform.position.x - range, transform.position.x + range), 
-			Random.Range(transform.position.y - range, transform.position.y + range), 
-			transform.position.z
-		);
-		if (wayPoint.x > transform.position.x) {
-			transform.localScale = lookRight;
+		targetPosition = transform.position + Random.onUnitSphere * range;
+		if (targetPosition.x > transform.position.x) {
+			body.transform.localScale = lookRight;
 		} else {
-			transform.localScale = lookLeft;
+			body.transform.localScale = lookLeft;
 		}
-		
 	}
 	
 	void OnTriggerEnter2D(Collider2D col) {
 		if (col.tag == "Wall") {
-			wayPoint = -wayPoint;
+			targetPosition = -targetPosition;
+			NewTargetPosition();
 		} else if (dragging && col.tag == "Creature") {
 			currentTouchingCreature = col.GetComponent<Creature> ();
 		}
@@ -84,6 +91,7 @@ public class CreatureMovement : MonoBehaviour {
 	void OnMouseDown() {
 		offSet = transform.position - Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		dragging = true;
+		anim.SetBool("walking", false);
 	}
 	
 	void OnMouseUp() {

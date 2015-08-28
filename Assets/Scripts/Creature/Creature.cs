@@ -9,12 +9,13 @@ public class Creature : MonoBehaviour {
 	public Sprite[] headSprites;
 	public Sprite[] bodySprites;
 	
+	public GameObject body;
 	SpriteRenderer bodyRenderer;
 	public GameObject head;
 	SpriteRenderer headRenderer;
 	
 	void Awake() {
-		bodyRenderer = GetComponent<SpriteRenderer> ();
+		bodyRenderer = body.GetComponent<SpriteRenderer> ();
 		headRenderer = head.GetComponent<SpriteRenderer> ();
 	}
 	
