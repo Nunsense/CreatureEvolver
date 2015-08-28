@@ -2,9 +2,6 @@
 using System.Collections;
 
 public class CreatureMovement : MonoBehaviour {
-
-	public GameObject creaturePrefav;
-	
 	float speed = 0.5f;
 	Vector3 targetPosition;
 	float range = 1f;
@@ -22,13 +19,15 @@ public class CreatureMovement : MonoBehaviour {
 	bool dragging = false;
 	Vector3 offSet;
 	
-	Creature currentTouchingCreature;
+	GameObject currentTouchingCreature;
+	Creature creature;
 	
 	Animator anim;
 	
 	Transform body;
 	
 	void Awake() {
+		creature = GetComponent<Creature> ();
 		body = transform.FindChild("Body");
 		anim = GetComponent<Animator> ();
 	}
@@ -78,7 +77,7 @@ public class CreatureMovement : MonoBehaviour {
 			targetPosition = -targetPosition;
 			NewTargetPosition();
 		} else if (dragging && col.tag == "Creature") {
-			currentTouchingCreature = col.GetComponent<Creature> ();
+			currentTouchingCreature = col.gameObject;
 		}
 	}
 	
@@ -96,15 +95,8 @@ public class CreatureMovement : MonoBehaviour {
 	
 	void OnMouseUp() {
 		dragging = false;
-		if (currentTouchingCreature != null) {
-			MergeCreatures(currentTouchingCreature);
+		if (currentTouchingCreature != null && currentTouchingCreature.activeSelf) {
+			creature.MergeCreatures(currentTouchingCreature.GetComponent<Creature>());
 		}
-	}
-	
-	void MergeCreatures(Creature other) {
-		GameObject creatureGO = GameObject.Instantiate(creaturePrefav) as GameObject;
-		creatureGO.transform.position = transform.position;
-		Creature creature = creatureGO.GetComponent<Creature> ();
-		creature.MergeCreatures(GetComponent<Creature> (), other);
 	}
 }

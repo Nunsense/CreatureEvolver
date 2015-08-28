@@ -2,9 +2,8 @@
 using System.Collections;
 
 public class Creature : MonoBehaviour {
-
-	public int bodyLevel = 0;
-	public int headLevel = 0;
+	
+	public GameObject creaturePrefav;
 	
 	public Sprite[] headSprites;
 	public Sprite[] bodySprites;
@@ -14,43 +13,55 @@ public class Creature : MonoBehaviour {
 	public GameObject head;
 	SpriteRenderer headRenderer;
 	
+	float timeToDuplicate;
+	
+	public CreatureData data;
+	
 	void Awake() {
 		bodyRenderer = body.GetComponent<SpriteRenderer> ();
 		headRenderer = head.GetComponent<SpriteRenderer> ();
 	}
 	
 	void Start () {
-		bodyLevel = Random.Range(0, bodySprites.Length);
-		headLevel = Random.Range(0, headSprites.Length);
-		SetSprites();
+		if (!data.initialized) {
+			SetData(CreatureData.RandomCreature());
+		}
 	}
 
 	void Update () {
+		timeToDuplicate -= Time.deltaTime;
+		if (timeToDuplicate <= 0) {
+			
+			timeToDuplicate = data.DuplicateRate;
+		}
+	}
 	
+	public void SetData(CreatureData _data) {
+		data = _data;
+		SetSprites();
 	}
 	
 	void SetSprites() {
-		bodyRenderer.sprite = bodySprites[bodyLevel];
-		headRenderer.sprite = headSprites[headLevel];
+		bodyRenderer.sprite = bodySprites[data.BodyId];
+		headRenderer.sprite = headSprites[data.HeadId];
 	}
 	
-	public void MergeCreatures(Creature one, Creature other) {
-		if (one.bodyLevel == other.bodyLevel) {
-			bodyLevel = one.bodyLevel + 1;
-		} else {
-			bodyLevel = Random.Range(
-				Mathf.Min(one.bodyLevel, other.bodyLevel), 
-				Mathf.Max(one.bodyLevel, other.bodyLevel)
-			);
+	public void MergeCreatures(Creature other) {
+		if (other != null) {
+			Creature creature = NewCreature();
+			
+			creature.SetData(CreatureData.Merge(this.data, other.data));
+			creature.gameObject.SetActive(true);
+				
+			Destroy(other.gameObject);
+			Destroy(gameObject);
 		}
-		if (one.headLevel == other.headLevel) {
-			headLevel = one.headLevel + 1;
-		} else {
-			headLevel = Random.Range(
-				Mathf.Min(one.headLevel, other.headLevel), 
-				Mathf.Max(one.headLevel, other.headLevel)
-			);
-		}
-		SetSprites();
+	}
+	
+	Creature NewCreature() {
+		GameObject creatureGO = GameObject.Instantiate(creaturePrefav) as GameObject;
+		creatureGO.SetActive(false);
+		creatureGO.transform.position = transform.position;
+		return creatureGO.GetComponent<Creature> ();
 	}
 }
