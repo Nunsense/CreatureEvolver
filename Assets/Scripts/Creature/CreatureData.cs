@@ -7,7 +7,7 @@ using System.Collections;
 	public int HeadId;
 	public int BodyId;
 	public float SicknessRate;
-	public float DuplicateRate;
+	public float CloneRate;
 	
 	public static CreatureData Merge(CreatureData data1, CreatureData data2) {
 		CreatureData newData = new CreatureData();
@@ -15,11 +15,11 @@ using System.Collections;
 		if (Random.value < 0.5f) {
 			newData.BodyId = data1.BodyId;
 			Debug.Log(newData.BodyId);
-			newData.DuplicateRate = Mutate(data1.DuplicateRate);
+			newData.CloneRate = Mutate(data1.CloneRate);
 		} else {
 			newData.BodyId = data2.BodyId;
 			Debug.Log(newData.BodyId);
-			newData.DuplicateRate = Mutate(data2.DuplicateRate);
+			newData.CloneRate = Mutate(data2.CloneRate);
 		}
 
 		if (Random.value < 0.5f) {
@@ -49,7 +49,7 @@ using System.Collections;
 		CreatureData newData = new CreatureData();
 		newData.BodyId = 0;
 		newData.HeadId = 0;
-		newData.DuplicateRate = Mutate(3.0f);
+		newData.CloneRate = Mutate(10.0f);
 		newData.SicknessRate = Mutate(0.01f);
 		newData.initialized = true;
 		return newData;
@@ -59,7 +59,7 @@ using System.Collections;
 		CreatureData newData = new CreatureData();
 		newData.BodyId = 1;
 		newData.HeadId = 1;
-		newData.DuplicateRate = Mutate(2.0f);
+		newData.CloneRate = Mutate(20.0f);
 		newData.SicknessRate = Mutate(0.3f);
 		newData.initialized = true;
 		return newData;
@@ -69,7 +69,7 @@ using System.Collections;
 		CreatureData newData = new CreatureData();
 		newData.BodyId = 2;
 		newData.HeadId = 2;
-		newData.DuplicateRate = Mutate(2.4f);
+		newData.CloneRate = Mutate(15.4f);
 		newData.SicknessRate = Mutate(0.05f);
 		newData.initialized = true;
 		return newData;

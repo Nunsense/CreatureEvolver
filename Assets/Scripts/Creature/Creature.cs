@@ -13,7 +13,7 @@ public class Creature : MonoBehaviour {
 	public GameObject head;
 	SpriteRenderer headRenderer;
 	
-	float timeToDuplicate;
+	float timeToClone;
 	
 	public CreatureData data;
 	
@@ -29,39 +29,42 @@ public class Creature : MonoBehaviour {
 	}
 
 	void Update () {
-		timeToDuplicate -= Time.deltaTime;
-		if (timeToDuplicate <= 0) {
+		timeToClone -= Time.deltaTime;
+		Debug.Log(timeToClone);
+		if (timeToClone <= 0) {
+			Clone();
 			
-			timeToDuplicate = data.DuplicateRate;
+			timeToClone = data.CloneRate;
 		}
 	}
 	
 	public void SetData(CreatureData _data) {
 		data = _data;
-		SetSprites();
-	}
-	
-	void SetSprites() {
+		
 		bodyRenderer.sprite = bodySprites[data.BodyId];
 		headRenderer.sprite = headSprites[data.HeadId];
+		timeToClone = data.CloneRate;
+	}
+	
+	void Clone() {
+		NewCreature(data);
 	}
 	
 	public void MergeCreatures(Creature other) {
 		if (other != null) {
-			Creature creature = NewCreature();
-			
-			creature.SetData(CreatureData.Merge(this.data, other.data));
-			creature.gameObject.SetActive(true);
+			NewCreature(CreatureData.Merge(this.data, other.data));
 				
 			Destroy(other.gameObject);
 			Destroy(gameObject);
 		}
 	}
 	
-	Creature NewCreature() {
+	void NewCreature(CreatureData data) {
 		GameObject creatureGO = GameObject.Instantiate(creaturePrefav) as GameObject;
-		creatureGO.SetActive(false);
+		Creature creature = creatureGO.GetComponent<Creature> ();
+		
+		creature.SetData(data);
+		creatureGO.transform.parent = transform.parent;
 		creatureGO.transform.position = transform.position;
-		return creatureGO.GetComponent<Creature> ();
 	}
 }
